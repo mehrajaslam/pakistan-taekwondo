@@ -26,7 +26,7 @@ class PTFDatabase {
             const defaultData = {
                 users: [
                     { id: 1, name: "Waseem Ahmed", email: "admin@ptf.org", password: "admin123", role: "Admin", avatar: "https://pakistantaekwondo.com/wp-content/uploads/2025/03/WhatsApp-Image-2023-08-30-at-5.28.58-PM-470x503-1.webp" },
-                    { id: 2, name: "Ali Hassan", email: "user@ptf.org", password: "user123", role: "User", avatar: "data:image/jpeg;base64,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" }
+                    { id: 2, name: "Ali Hassan", email: "user@ptf.org", password: "user123", role: "User", avatar: "data:image/jpeg;base64,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" }
                 ],
                 currentUser: null,
                 stats: {
@@ -69,8 +69,8 @@ class PTFDatabase {
                     { id: 4, type: "License", description: "15 licenses updated in Kukkiwon database", date: "2025-09-22", status: "Sync completed" }
                 ],
                 events: [
-                    { id: 1, name: "National Championship", date: "2025-11-15", endDate: "2025-11-17", location: "Punjab Stadium, Lahore", participants: 234, status: "Registration Open", registeredAthletes: ["PTF-001", "PTF-003"] },
-                    { id: 2, name: "Master Workshop", date: "2025-11-20", location: "Karachi Sports Complex", participants: 45, maxParticipants: 60, status: "Limited Seats", registeredAthletes: [] },
+                    { id: 1, name: "National Championship", date: "2025-11-15", endDate: "2025-11-17", location: "Punjab Stadium, Lahore", participants: 234, maxParticipants: 300, status: "Registration Open", registeredAthletes: ["PTF-001", "PTF-003"] },
+                    { id: 2, name: "Master Workshop", date: "2025-11-20", location: "Karachi Sports Complex", participants: 60, maxParticipants: 60, status: "Limited Seats", registeredAthletes: [] },
                     { id: 3, name: "Training Camp", date: "2025-12-01", endDate: "2025-12-15", location: "National Training Center", participants: 12, status: "Selection Based", registeredAthletes: [] }
                 ],
                 athletes: [
@@ -694,9 +694,11 @@ class PTFUIController {
         const name = (formData.get('name') as string)?.trim();
         const location = (formData.get('location') as string)?.trim();
         const date = formData.get('date') as string;
+        const status = formData.get('status') as string;
+        const maxParticipantsStr = (formData.get('maxParticipants') as string)?.trim();
 
-        if (!name || !location || !date) {
-            this.showNotification('All event fields are required.', 'error');
+        if (!name || !location || !date || !status) {
+            this.showNotification('Name, location, date, and status are required.', 'error');
             return;
         }
         
@@ -705,7 +707,8 @@ class PTFUIController {
             date: date,
             location: location,
             participants: 0,
-            status: 'Upcoming',
+            status: status,
+            maxParticipants: maxParticipantsStr ? parseInt(maxParticipantsStr, 10) : null,
             registeredAthletes: []
         };
         
@@ -866,24 +869,35 @@ class PTFUIController {
         const events = this.db.getData().events || [];
         const isDeletable = this.editMode && this.currentUser.role === 'Admin';
         const isAdmin = this.currentUser.role === 'Admin';
-
-        container.innerHTML = events.map((event, index) => `
-            <div class="p-4 bg-gradient-to-r from-${this.getEventColor(event)}-50 to-${this.getEventColor(event)}-100 rounded-xl border-l-4 border-${this.getEventColor(event)}-500 event-item animate-in" style="animation-delay: ${index * 0.05}s" data-id="${event.id}">
+    
+        container.innerHTML = events.map((event, index) => {
+            const isFull = event.maxParticipants && event.participants >= event.maxParticipants;
+            const currentStatus = isFull ? 'Full' : event.status;
+            const eventWithStatus = { ...event, status: currentStatus };
+            const color = this.getEventColor(eventWithStatus);
+    
+            const participantText = event.maxParticipants
+                ? `${event.participants} / ${event.maxParticipants} registered`
+                : `${event.participants} registered`;
+            
+            return `
+            <div class="p-4 bg-gradient-to-r from-${color}-50 to-${color}-100 rounded-xl border-l-4 border-${color}-500 event-item animate-in" style="animation-delay: ${index * 0.05}s" data-id="${event.id}">
                 <div class="flex justify-between items-start mb-2">
-                    <h4 class="font-bold text-${this.getEventColor(event)}-800">${event.name}</h4>
-                    <span class="bg-${this.getEventColor(event)}-500 text-white text-xs px-2 py-1 rounded-full">${event.date}</span>
+                    <h4 class="font-bold text-${color}-800">${event.name}</h4>
+                    <span class="bg-${color}-500 text-white text-xs px-2 py-1 rounded-full">${currentStatus}</span>
                 </div>
-                <p class="text-sm text-${this.getEventColor(event)}-700">${event.location}</p>
-                <div class="mt-3 flex items-center text-xs text-${this.getEventColor(event)}-600">
+                <p class="text-sm text-${color}-700">${event.location} • ${event.date}</p>
+                <div class="mt-3 flex items-center text-xs text-${color}-600">
                     <i class="fas fa-users mr-1"></i>
-                    <span>${event.participants} registered</span>
+                    <span>${participantText}</span>
                     <div class="ml-auto flex items-center space-x-3">
                         ${isAdmin ? `<button class="register-athletes-btn text-emerald-600 hover:text-emerald-800 font-semibold text-xs flex items-center" data-id="${event.id}"><i class="fas fa-user-plus mr-1"></i>Register</button>` : ''}
                         ${isDeletable ? `<button class="delete-event text-red-500 hover:text-red-700" data-id="${event.id}"><i class="fas fa-trash"></i></button>` : ''}
                     </div>
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
         
         if (isAdmin) {
             document.querySelectorAll('.delete-event').forEach(btn => btn.addEventListener('click', (e) => {
@@ -1640,7 +1654,7 @@ class PTFUIController {
     }
     
     getEventColor(event) {
-        const statusMap = { 'Registration Open': 'emerald', 'Limited Seats': 'blue', 'Selection Based': 'amber' };
+        const statusMap = { 'Registration Open': 'emerald', 'Limited Seats': 'blue', 'Selection Based': 'amber', 'Full': 'red', 'Upcoming': 'purple' };
         return statusMap[event.status] || 'gray';
     }
     
@@ -1769,8 +1783,7 @@ class PTFUIController {
                 const name = btn.getAttribute('data-name');
                 if (type && name) {
                     const entryData = this.db.getData().regionalStats?.[type]?.[name];
-                    // FIX: Spread operator was used on `entryData`, which could be undefined, causing "Spread types may only be created from object types" error.
-                    // Added a guard to ensure `entryData` is a valid object before using its properties.
+                    // FIX: Guard against `entryData` being undefined before accessing its properties to prevent a potential spread operator error on an undefined value.
                     if (entryData && typeof entryData === 'object' && !Array.isArray(entryData)) {
                         // Manually construct the object to pass to the modal for better type safety.
                         const modalData = { name, athletes: entryData.athletes, clubs: entryData.clubs, icon: entryData.icon };
@@ -1926,8 +1939,7 @@ class PTFUIController {
             const userId = parseInt((e.currentTarget as HTMLElement).getAttribute('data-id'));
             const user = this.db.getUsers().find(u => u.id === userId);
             if (user) {
-                // FIX: The properties of `user` (from JSON) are of type `any`/`unknown` which is not safely assignable to a `string` input value.
-                // Explicitly convert user properties to strings to fix the type mismatch.
+                // FIX: Explicitly convert user properties to strings before assigning to input/select values to prevent type errors, as properties from JSON.parse can be of type `any` or `unknown`.
                 (document.getElementById('userId') as HTMLInputElement).value = String(user.id);
                 (document.getElementById('userName') as HTMLInputElement).value = String(user.name);
                 (document.getElementById('userEmail') as HTMLInputElement).value = String(user.email);
