@@ -1767,9 +1767,10 @@ class PTFUIController {
             btn.addEventListener('click', () => {
                 const type = btn.getAttribute('data-type');
                 const name = btn.getAttribute('data-name');
-                // FIX: Spread types may only be created from object types. Added a guard to ensure entryData is a valid object before accessing its properties.
                 if (type && name) {
                     const entryData = this.db.getData().regionalStats?.[type]?.[name];
+                    // FIX: Spread operator was used on `entryData`, which could be undefined, causing "Spread types may only be created from object types" error.
+                    // Added a guard to ensure `entryData` is a valid object before using its properties.
                     if (entryData && typeof entryData === 'object' && !Array.isArray(entryData)) {
                         // Manually construct the object to pass to the modal for better type safety.
                         const modalData = { name, athletes: entryData.athletes, clubs: entryData.clubs, icon: entryData.icon };
@@ -1925,7 +1926,8 @@ class PTFUIController {
             const userId = parseInt((e.currentTarget as HTMLElement).getAttribute('data-id'));
             const user = this.db.getUsers().find(u => u.id === userId);
             if (user) {
-                // FIX: Type 'unknown' is not assignable to type 'string'. Explicitly convert user properties to strings before assigning them to input values.
+                // FIX: The properties of `user` (from JSON) are of type `any`/`unknown` which is not safely assignable to a `string` input value.
+                // Explicitly convert user properties to strings to fix the type mismatch.
                 (document.getElementById('userId') as HTMLInputElement).value = String(user.id);
                 (document.getElementById('userName') as HTMLInputElement).value = String(user.name);
                 (document.getElementById('userEmail') as HTMLInputElement).value = String(user.email);
