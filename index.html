@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pakistan Taekwondo Federation - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.21.0"
+  }
+}
+</script>
+</head>
+<body class="bg-gray-50">
+    <!-- Main App Container -->
+    <div id="appContainer" class="hidden">
+        <!-- Modern Navigation Header -->
+        <nav class="gradient-bg text-white shadow-2xl sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16 items-center">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-3">
+                            <img src="data:image/jpeg;base64,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" class="w-10 h-10 rounded-lg">
+                            <div>
+                                <h1 class="text-xl font-bold">PTF Dashboard</h1>
+                                <p class="text-xs opacity-80">Pakistan Taekwondo Federation</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side Actions -->
+                    <div class="flex items-center space-x-4">
+                        <button id="editModeToggle" class="bg-white/20 px-4 py-2 rounded-lg hover:bg-white/30 transition-colors hidden sm:block">
+                            <i class="fas fa-edit mr-2"></i>Edit Mode: <span id="editStatus">OFF</span>
+                        </button>
+                        
+                        <button id="exportData" class="bg-white/20 px-4 py-2 rounded-lg hover:bg-white/30 transition-colors hidden lg:block">
+                            <i class="fas fa-download mr-2"></i>Export
+                        </button>
+                        <button id="importData" class="bg-white/20 px-4 py-2 rounded-lg hover:bg-white/30 transition-colors hidden lg:block">
+                            <i class="fas fa-upload mr-2"></i>Import
+                        </button>
+                        
+                        <!-- Dark Mode Toggle -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="darkModeToggle" class="hidden">
+                            <label for="darkModeToggle" class="cursor-pointer flex items-center justify-between w-12 h-6 rounded-full p-1 relative transition-colors">
+                                <i class="fas fa-sun text-yellow-400"></i>
+                                <i class="fas fa-moon text-white"></i>
+                                <span class="absolute left-1 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-md transform transition-transform"></span>
+                            </label>
+                        </div>
+
+                        <!-- User Profile -->
+                        <div id="userProfile" class="flex items-center space-x-3">
+                            <div class="text-right hidden md:block">
+                                <p id="currentUserName" class="text-sm font-medium">Admin</p>
+                                <button id="logoutBtn" class="text-xs opacity-80 hover:opacity-100">Logout</button>
+                            </div>
+                            <img id="currentUserAvatar" src="https://via.placeholder.com/150" class="w-10 h-10 rounded-full object-cover border-2 border-white/30">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Modern Dashboard Layout -->
+        <div class="flex">
+            <!-- Sidebar -->
+            <div id="sidebar" class="sidebar bg-white shadow-lg h-screen sticky top-16 w-64 overflow-y-auto">
+                <div class="p-4">
+                    <!-- Quick Stats -->
+                    <div class="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-blue-50 rounded-xl editable" data-type="stats" data-field="activeAthletes">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-600">Active Athletes</span>
+                            <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full">Live</span>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-800" id="activeAthletesCount">2,847</div>
+                        <div class="flex items-center mt-1">
+                            <i class="fas fa-arrow-up text-emerald-500 text-xs mr-1"></i>
+                            <span class="text-xs text-emerald-500">12% this month</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation Menu -->
+                    <nav class="space-y-1">
+                        <a href="#" class="tab-btn active flex items-center space-x-3 p-3 rounded-xl bg-emerald-50 text-emerald-700 font-medium" data-tab="dashboard">
+                            <i class="fas fa-tachometer-alt w-5 text-center"></i>
+                            <span class="sidebar-text">Dashboard</span>
+                        </a>
+                        <a href="#" id="regionsTabBtn" class="tab-btn flex items-center space-x-3 p-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" data-tab="regions">
+                            <i class="fas fa-map-marked-alt w-5 text-center"></i>
+                            <span class="sidebar-text">Regions & Depts</span>
+                        </a>
+                        <a href="#" class="tab-btn flex items-center space-x-3 p-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" data-tab="danTests">
+                            <i class="fas fa-user-graduate w-5 text-center"></i>
+                            <span class="sidebar-text">Kukkiwon Dan Tests</span>
+                        </a>
+                        <a href="#" class="tab-btn flex items-center space-x-3 p-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" data-tab="curriculum">
+                            <i class="fas fa-book-open w-5 text-center"></i>
+                            <span class="sidebar-text">Training Curriculum</span>
+                        </a>
+                        <a href="#" class="tab-btn flex items-center space-x-3 p-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" data-tab="athletes">
+                            <i class="fas fa-users w-5 text-center"></i>
+                            <span class="sidebar-text">Athlete Management</span>
+                        </a>
+                        <a href="#" class="tab-btn flex items-center space-x-3 p-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" data-tab="competitions">
+                            <i class="fas fa-trophy w-5 text-center"></i>
+                            <span class="sidebar-text">Competitions</span>
+                        </a>
+                        <a href="#" class="tab-btn flex items-center space-x-3 p-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" data-tab="licensing">
+                            <i class="fas fa-id-card w-5 text-center"></i>
+                            <span class="sidebar-text">Global Licensing</span>
+                        </a>
+                         <a href="#" id="usersTabBtn" class="tab-btn flex items-center space-x-3 p-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" data-tab="users">
+                            <i class="fas fa-user-shield w-5 text-center"></i>
+                            <span class="sidebar-text">User Management</span>
+                        </a>
+                        <a href="#" class="tab-btn flex items-center space-x-3 p-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" data-tab="analytics">
+                            <i class="fas fa-chart-bar w-5 text-center"></i>
+                            <span class="sidebar-text">Analytics</span>
+                        </a>
+                    </nav>
+                    
+                    <!-- Divider -->
+                    <div class="my-6 border-t border-gray-200"></div>
+                    
+                    <!-- Quick Actions -->
+                    <div id="quickActions">
+                        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 sidebar-text">Quick Actions</h3>
+                        <div class="space-y-2">
+                            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition-colors" id="addAthleteBtn">
+                                <i class="fas fa-plus-circle w-5 text-center text-emerald-500"></i>
+                                <span class="sidebar-text">New Athlete</span>
+                            </a>
+                            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition-colors" id="scheduleTestBtn">
+                                <i class="fas fa-calendar-plus w-5 text-center text-blue-500"></i>
+                                <span class="sidebar-text">Schedule Test</span>
+                            </a>
+                            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition-colors" id="addEventBtn">
+                                <i class="fas fa-trophy w-5 text-center text-amber-500"></i>
+                                <span class="sidebar-text">New Event</span>
+                            </a>
+                            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition-colors" id="exportReportBtn">
+                                <i class="fas fa-file-export w-5 text-center text-purple-500"></i>
+                                <span class="sidebar-text">Export Report</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div id="mainContent" class="main-content flex-1 p-6">
+                <!-- Dashboard Tab Content -->
+                <div id="dashboard" class="tab-content">
+                    <!-- President's Welcome Section -->
+                    <section class="mb-8 editable animate-in" data-type="presidentWelcome" data-field="message">
+                        <div class="bg-white rounded-2xl p-8 shadow-sm card-hover flex flex-col md:flex-row items-center gap-8">
+                            <img src="https://pakistantaekwondo.com/wp-content/uploads/2025/03/WhatsApp-Image-2023-08-30-at-5.28.58-PM-470x503-1.webp" alt="President of PTF" class="w-32 h-32 rounded-full object-cover border-4 border-emerald-500 shadow-md flex-shrink-0">
+                            <div class="text-center md:text-left">
+                                <h2 class="text-2xl font-bold text-gray-800 mb-2">President's Welcome Note</h2>
+                                <p id="presidentWelcomeMessage" class="text-gray-600 mb-3">It is with immense pleasure that I welcome you to the official dashboard of the Pakistan Taekwondo Federation. This platform is a testament to our commitment to transparency, efficiency, and the advancement of Taekwondo in our nation. Let's work together to elevate our athletes to new heights.</p>
+                                <p class="font-semibold text-gray-800">Lt Col (R) Waseem Ahmed Janjua</p>
+                                <p class="text-sm text-gray-500">President, Pakistan Taekwondo Federation</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Regional & Departmental Analytics Chart -->
+                    <section class="mb-8 animate-in" style="animation-delay: 0.1s;">
+                        <div class="bg-white rounded-2xl shadow-sm p-6 card-hover">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Athlete Distribution Analytics</h3>
+                            <div class="relative h-96">
+                                <canvas id="regionalAnalyticsChart"></canvas>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Main Dashboard Grid -->
+                    <section class="grid lg:grid-cols-3 gap-6 mb-8">
+                        <!-- Recent Activity & Federation News -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <!-- Recent Activity -->
+                            <div class="bg-white rounded-2xl shadow-sm p-6 card-hover animate-in" style="animation-delay: 0.2s;">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h3 class="text-xl font-bold text-gray-800">Recent Activity</h3>
+                                    <button class="text-sm text-emerald-600 font-medium" id="addActivityBtn">Add Activity</button>
+                                </div>
+                                <div class="space-y-4" id="activityList">
+                                    <!-- Activities will be loaded here -->
+                                </div>
+                            </div>
+
+                            <!-- Federation News -->
+                            <div class="bg-white rounded-2xl shadow-sm p-6 card-hover animate-in" style="animation-delay: 0.25s;">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4">Federation News</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="responsive-iframe-container">
+                                        <iframe src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2FPakistanTKD%2Fvideos%2F1141537464184826%2F&show_text=false&width=560&t=0" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>
+                                    </div>
+                                    <div class="responsive-iframe-container">
+                                        <iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2FPakistanTKD%2Fposts%2F1158926466234313&show_text=true&width=500" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Upcoming Events -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white rounded-2xl shadow-sm p-6 card-hover h-full animate-in" style="animation-delay: 0.3s;">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h3 class="text-xl font-bold text-gray-800">Upcoming Events</h3>
+                                    <button class="text-sm text-emerald-600 font-medium" id="addEventBtn2">Add Event</button>
+                                </div>
+                                <div class="space-y-4" id="eventsList">
+                                    <!-- Events will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+
+                <!-- Other Tab Contents -->
+                <div id="regions" class="tab-content hidden"></div>
+                <div id="danTests" class="tab-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Add Dan Test Form -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white rounded-2xl shadow-sm p-6 card-hover sticky top-20">
+                                <h2 class="text-2xl font-bold text-gray-800 mb-6">Record Dan Test</h2>
+                                <form id="danTestForm" class="space-y-4">
+                                    <div>
+                                        <label for="danTestAthlete" class="block text-sm font-medium text-gray-700 mb-1">Athlete</label>
+                                        <select id="danTestAthlete" name="athleteId" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                                            <!-- Athlete options populated by JS -->
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="danLevel" class="block text-sm font-medium text-gray-700 mb-1">Dan Level</label>
+                                        <input id="danLevel" name="danLevel" type="number" min="1" max="9" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="1-9" required>
+                                    </div>
+                                    <div>
+                                        <label for="testDate" class="block text-sm font-medium text-gray-700 mb-1">Test Date</label>
+                                        <input id="testDate" name="testDate" type="date" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                                    </div>
+                                    <div>
+                                        <label for="examiner" class="block text-sm font-medium text-gray-700 mb-1">Examiner</label>
+                                        <input id="examiner" name="examiner" type="text" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g., Grandmaster Kim" required>
+                                    </div>
+                                    <div>
+                                        <label for="danTestResult" class="block text-sm font-medium text-gray-700 mb-1">Result</label>
+                                        <select id="danTestResult" name="result" class="w-full p-2 border border-gray-300 rounded-lg">
+                                            <option>Pass</option>
+                                            <option>Fail</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="kukkiwonCertNo" class="block text-sm font-medium text-gray-700 mb-1">Kukkiwon Cert # (if passed)</label>
+                                        <input id="kukkiwonCertNo" name="kukkiwonCertNo" type="text" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g., K-2-12345">
+                                    </div>
+                                    <button type="submit" class="w-full bg-emerald-600 text-white px-5 py-3 rounded-lg hover:bg-emerald-700 transition-colors font-semibold">
+                                        Add Test Record
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- Dan Test List -->
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-2xl shadow-sm p-6 card-hover">
+                                <h2 class="text-2xl font-bold text-gray-800 mb-6">Dan Test Records</h2>
+                                <div id="danTestListContainer" class="overflow-x-auto">
+                                    <!-- Dan Test table will be rendered here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="curriculum" class="tab-content hidden space-y-8">
+                    <!-- AI Kyorugi Training Plan Creator -->
+                    <div class="bg-white rounded-2xl shadow-sm p-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">AI Kyorugi Training Plan Creator</h2>
+                        <div class="grid lg:grid-cols-3 gap-8">
+                            <!-- Form Section -->
+                            <div class="lg:col-span-1">
+                                <form id="kyorugiForm" class="space-y-6 bg-gray-50 p-6 rounded-xl border">
+                                    <div>
+                                        <label for="kyorugiAthlete" class="block text-sm font-medium text-gray-700 mb-2">Select Athlete</label>
+                                        <select id="kyorugiAthlete" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                                            <!-- Options populated by JS -->
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="kyorugiFocus" class="block text-sm font-medium text-gray-700 mb-2">Primary Focus</label>
+                                        <select id="kyorugiFocus" class="w-full p-2 border border-gray-300 rounded-lg">
+                                            <option>Overall Conditioning</option>
+                                            <option>Speed & Agility</option>
+                                            <option>Power Kicking</option>
+                                            <option>Stamina & Endurance</option>
+                                            <option>Counter-Attacks</option>
+                                            <option>Ring Management & Footwork</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="kyorugiDuration" class="block text-sm font-medium text-gray-700 mb-2">Training Duration</label>
+                                        <select id="kyorugiDuration" class="w-full p-2 border border-gray-300 rounded-lg">
+                                            <option>1 Week</option>
+                                            <option>4 Weeks</option>
+                                            <option>8 Weeks</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" id="generateKyorugiPlanBtn" class="w-full bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center space-x-2">
+                                        <i class="fas fa-running"></i>
+                                        <span>Generate Training Plan</span>
+                                    </button>
+                                </form>
+                            </div>
+                            <!-- Result Section -->
+                            <div class="lg:col-span-2">
+                                <div id="kyorugiContainer" class="min-h-[300px] flex items-center justify-center bg-gray-50 rounded-lg p-4 border-dashed border-2">
+                                    <div id="kyorugiPlaceholder" class="text-center text-gray-500">
+                                        <i class="fas fa-clipboard-list fa-3x mb-4 text-gray-300"></i>
+                                        <h3 class="text-xl font-semibold">Your AI-Generated Training Plan</h3>
+                                        <p>Select an athlete and training parameters to create a plan.</p>
+                                    </div>
+                                    <div id="kyorugiLoading" class="hidden text-center text-gray-600">
+                                        <i class="fas fa-spinner fa-spin fa-3x mb-4 text-blue-500"></i>
+                                        <h3 class="text-xl font-semibold">Designing the Regimen...</h3>
+                                        <p>The AI coach is developing a personalized training plan.</p>
+                                    </div>
+                                    <div id="kyorugiResult" class="hidden w-full">
+                                        <!-- AI Kyorugi plan will be rendered here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- AI Poomsae Creator -->
+                    <div class="bg-white rounded-2xl shadow-sm p-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">AI Poomsae Creator</h2>
+                        <div class="grid lg:grid-cols-3 gap-8">
+                            <!-- Form Section -->
+                            <div class="lg:col-span-1">
+                                <form id="poomsaeForm" class="space-y-6 bg-gray-50 p-6 rounded-xl border">
+                                    <div>
+                                        <label for="poomsaeInspiration" class="block text-sm font-medium text-gray-700 mb-2">Core Inspiration</label>
+                                        <input type="text" id="poomsaeInspiration" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g., A soaring eagle" required>
+                                    </div>
+                                    <div>
+                                        <label for="poomsaeDifficulty" class="block text-sm font-medium text-gray-700 mb-2">Difficulty Level</label>
+                                        <select id="poomsaeDifficulty" class="w-full p-2 border border-gray-300 rounded-lg">
+                                            <option>Beginner</option>
+                                            <option>Intermediate</option>
+                                            <option>Advanced</option>
+                                            <option>Master</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="poomsaeMoves" class="block text-sm font-medium text-gray-700 mb-2">Number of Moves</label>
+                                        <input type="number" id="poomsaeMoves" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g., 24" required>
+                                    </div>
+                                    <button type="submit" id="generatePoomsaeBtn" class="w-full bg-emerald-600 text-white px-5 py-3 rounded-lg hover:bg-emerald-700 transition-colors font-semibold flex items-center justify-center space-x-2">
+                                        <i class="fas fa-magic"></i>
+                                        <span>Generate Poomsae</span>
+                                    </button>
+                                </form>
+                            </div>
+                            <!-- Result Section -->
+                            <div class="lg:col-span-2">
+                                <div id="poomsaeContainer" class="min-h-[300px] flex items-center justify-center bg-gray-50 rounded-lg p-4 border-dashed border-2">
+                                    <div id="poomsaePlaceholder" class="text-center text-gray-500">
+                                        <i class="fas fa-book-open fa-3x mb-4 text-gray-300"></i>
+                                        <h3 class="text-xl font-semibold">Your AI-Generated Form Awaits</h3>
+                                        <p>Fill out the details on the left to create a new Poomsae.</p>
+                                    </div>
+                                    <div id="poomsaeLoading" class="hidden text-center text-gray-600">
+                                        <i class="fas fa-spinner fa-spin fa-3x mb-4 text-emerald-500"></i>
+                                        <h3 class="text-xl font-semibold">Crafting a Masterpiece...</h3>
+                                        <p>The AI Grandmaster is designing your new form.</p>
+                                    </div>
+                                    <div id="poomsaeResult" class="hidden w-full">
+                                        <!-- AI Poomsae content will be rendered here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="athletes" class="tab-content hidden">
+                    <div class="bg-white rounded-2xl shadow-sm p-6">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h2 class="text-2xl font-bold text-gray-800 shrink-0">Athlete Management</h2>
+                            <div class="flex items-center gap-2 w-full flex-wrap md:flex-nowrap md:justify-end">
+                                <!-- Filters -->
+                                <select id="athleteBeltFilter" class="w-full sm:w-auto p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
+                                    <option value="All">All Belts</option>
+                                    <option>White</option>
+                                    <option>Yellow</option>
+                                    <option>Green</option>
+                                    <option>Blue</option>
+                                    <option>Red</option>
+                                    <option>Black</option>
+                                </select>
+                                <select id="athleteRegionFilter" class="w-full sm:w-auto p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
+                                    <option value="All">All Regions</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                                <!-- Search -->
+                                <div class="relative flex-grow w-full sm:w-auto">
+                                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    <input type="text" id="athleteSearchInput" placeholder="Search..." class="w-full md:w-52 p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
+                                </div>
+                                <!-- AI Button -->
+                                <button id="findGemBtn" class="bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600 transition-colors font-semibold flex-shrink-0 flex items-center space-x-2">
+                                    <i class="fas fa-gem"></i>
+                                    <span class="hidden lg:inline">Find a Gem</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="athleteListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Athlete cards will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+                <div id="competitions" class="tab-content hidden"><div class="bg-white rounded-2xl shadow-sm p-6"><h2 class="text-2xl font-bold text-gray-800 mb-6">Competitions</h2><p>This section would contain the competitions management interface.</p></div></div>
+                <div id="licensing" class="tab-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Add License Form -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white rounded-2xl shadow-sm p-6 card-hover sticky top-20">
+                                <h2 class="text-2xl font-bold text-gray-800 mb-6">Issue New License</h2>
+                                <form id="licenseForm" class="space-y-4">
+                                    <div>
+                                        <label for="holderName" class="block text-sm font-medium text-gray-700 mb-1">Holder Name</label>
+                                        <input id="holderName" name="holderName" type="text" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g., Ahmed Khan" required>
+                                    </div>
+                                    <div>
+                                        <label for="licenseType" class="block text-sm font-medium text-gray-700 mb-1">License Type</label>
+                                        <select id="licenseType" name="licenseType" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                                            <option>National Coach</option>
+                                            <option>International Coach</option>
+                                            <option>National Referee</option>
+                                            <option>International Referee</option>
+                                            <option>Club Operator</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="licenseId" class="block text-sm font-medium text-gray-700 mb-1">License ID</label>
+                                        <input id="licenseId" name="licenseId" type="text" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g., NC-056" required>
+                                    </div>
+                                    <div>
+                                        <label for="issueDate" class="block text-sm font-medium text-gray-700 mb-1">Issue Date</label>
+                                        <input id="issueDate" name="issueDate" type="date" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                                    </div>
+                                    <div>
+                                        <label for="expiryDate" class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                                        <input id="expiryDate" name="expiryDate" type="date" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                                    </div>
+                                    <button type="submit" class="w-full bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                                        Issue License
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- License List -->
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-2xl shadow-sm p-6 card-hover">
+                                <h2 class="text-2xl font-bold text-gray-800 mb-6">Global License Records</h2>
+                                <div id="licenseListContainer" class="overflow-x-auto">
+                                    <!-- License table will be rendered here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="users" class="tab-content hidden"></div>
+                <div id="analytics" class="tab-content hidden">
+                    <div class="bg-white rounded-2xl shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800">Federation Insights</h2>
+                            <button id="generateInsightsBtn" class="bg-emerald-600 text-white px-5 py-2.5 rounded-lg hover:bg-emerald-700 transition-colors font-semibold flex items-center space-x-2">
+                                <i class="fas fa-magic"></i>
+                                <span>Generate with AI</span>
+                            </button>
+                        </div>
+                        <div id="insightsContainer" class="min-h-[400px] flex items-center justify-center bg-gray-50 rounded-lg p-4">
+                            <div id="insightsPlaceholder" class="text-center text-gray-500">
+                                <i class="fas fa-chart-bar fa-3x mb-4 text-gray-300"></i>
+                                <h3 class="text-xl font-semibold">Unlock AI-Powered Insights</h3>
+                                <p>Click the button to analyze your federation's data and get strategic recommendations.</p>
+                            </div>
+                            <div id="insightsLoading" class="hidden text-center text-gray-600">
+                                <i class="fas fa-spinner fa-spin fa-3x mb-4 text-emerald-500"></i>
+                                <h3 class="text-xl font-semibold">Analyzing Data...</h3>
+                                <p>Gemini AI is processing your federation's information. This may take a moment.</p>
+                            </div>
+                            <div id="insightsResult" class="hidden w-full">
+                                <!-- AI content will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <!-- AI Assistant FAB -->
+        <a href="https://gemini.google.com/gem/9b9d78fcd097" target="_blank" rel="noopener noreferrer" class="fab-ai">
+            <i class="fas fa-brain"></i>
+            <span>Ask AI</span>
+        </a>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t mt-auto py-4">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+                <p>&copy; 2024 Pakistan Taekwondo Federation. All rights reserved.</p>
+                <a href="#activityList" class="hover:text-emerald-600">View Activity Page</a>
+            </div>
+        </footer>
+    </div>
+
+
+    <!-- Modals -->
+    <div id="loginModal" class="fixed inset-0 bg-gray-100 z-[1001] flex items-center justify-center p-4">
+        <div class="w-full max-w-sm">
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <div class="text-center mb-6">
+                    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhUSEhIVFRUVFRUVFRUVFRUVFRUVFRUWFhUVFRUYHSggGBolHRUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy0lICUtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAOEA4QMBEQACEQEDEQH/xAAcAAACAwEBAQEAAAAAAAAAAAAFBgMEBwIBCAD/xABCEAABAwIEAwYDBgMGBgMBAAABAgMRACEEBRIxQVEGEyJhcYEykaEUscHR8ELhByNSYnLxFTOCkrJDorLC0uJDVP/EABkBAAMBAQEAAAAAAAAAAAAAAAABAgMEBf/EACIRAQEAAgICAgMBAQEAAAAAAAABAhEDIRIxQQRREyJCYf/aAAwDAQACEQMRAD8A5CilKKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlSlAKvweMcYWl1tWlaDII/wA5VSoBFeh+y/g7WJxSnX06kMJ1BB21qJgEjmBET6x3oHo2P4m3m8O0+BqSpKHEqG4kAgj1BmvR+DdoMNhcK2hLqVuBGkpG5UeQA2ivP8Airl1jGKaQSlKCEgDYAGL0Fca5g2tCjK3AVJ7gHcnz2HqK2eXx4/m23LjP+L2jiPEkP4Z2cQhBWhaUrUqIEgg9q8++zvGtw/EWkLVoS8lbWo8tY1J+ZSB86hMjwj7ylBltxwJF1BCiEjkVEbD1Nc8tJSopUCFJJCgdiDuCKnj4scJjLeXOWY9lztHxCGLxrqWlJWlD7gSpJkEBZgzzry+lW4HEOMOIeZVpW2oKSRzBFa7I8IxeKKgwwtWg6VKVZCAdwNRgn0ms2OOOWm6WWU47b2h2x4p+GZwyWVFCnlr1WNiEISQk9xqO3cV5Ua0OKcfccfdeedOp1xRUo+Z6dkjYeQrLrXwsccJSZ5Z5SlKVIpSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQHrPsa4Sh55/FuJCtBAZSRMKWAoqI76RpHqfKvR+MMc3gMOt5QT4bQCUJAgFRAQhI7TJ+prgPZX2gYw/EaXlaWHwErPJKxyVt5byD6d66v2k4B7H4ZgwC024HlpB2UEpUAQORBUPMaecV53NjOWfR34Zxx3R5I8sqUpR3UST6kyaivCWhc42x7a9JjE6/L7yvP68fE4R1iXUJ06hISQFAjmNRBkeValJ8pYdO5R7X0fH0fS/jT6a8X7qP408h51I+pA0VscG42xhC8XwXCsABKU8yASZJ5AD8SKx60MPw555p15pJUhpOpZAJAAnp1iY7wKWWP1WOKen8ezK3FuKLeZfZVOpLqnGz0haQCB5ApPrPasmrMTg3WktqcQpIdTrRPlWnqP8AzFY9XxxlExlKUpUilKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKvwnDnn0uLaQpaWk63CB8qZiffpNZle/+xvBNjDvPKQkrU9oKyJOkISQmeQkqkeVRnkxx2tjjnlpHgeFpSgkEEEbgiCD3FFe5e3HgjKEs4xpAQpSwy7oASFFSSUKIG2ohKgTz0jyrwyuXHnlh0znhjlpHrHs1+0ZbLSE45SnGkgBL6RqWgDaFgbraRzGo+nOr/AGh9vWHdwr7GGcW648gtlWlSUISoaVE6gCTpJAjcnetPhz2NMMo0FtxQc1r/ACWbJ0EAgKI+8fP7q4Tjbg44rFltOhJdMJi5EAqA7hRJHpXJHHhlnb7dMss8cNPby1K9t+xXh+Hbwvi6UqddcWlRVGhQSAEgi9iZnnXF9r+DY/tG2WUpSjww6pKEhISVKd1CADYDSmfKuR+0HiV3B4fDtNKKPE1lahtqSgpSk+W5VMeVeji5Jyxhxx5RjnlPJ+N8Oph8U8wmVNqITP3Tuk+qSBX1Xsv7T2HMIhGJdSh5lAb1KMCQkbJVyJIETzNeQ4v2QYuFktIcQhRDiHkBJSoEagRqBBE2MVyPE3Bn8OoIebKEqGoBQCgRyMKJG/MVfPhwz90x48s8X7rLpTClKJJJJJJNyTuSaaSleilKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlQCvfvY4sf2avv46/8ApprwGvQvZJx9rBqfQ+VJS9oKVJBVsjVBBAn7x51HNicscdNsMsc9vR/bnif5HhD1C3nEE/dXqJ/ECuO9lvs+w+IwrcU+hxRKiUJJShFyEwQCTbnXRe0PijHFcG38KFr8NySsgJSoJIUlO6ibkG3Kum+z3A/g8A0yRaNRV31LJUQfQkD0FceOWOOOnr0zjlly13PKu3j3C28SwwylCHtPiOhHygFakpBAskkFRjnArzHEcYxT7SWXXluIQdSUqIIBgCAefIVg1qY/gOJw6EPPNFCVjUkmDYeYUSJ86vjxrH3LHLklf0x7GOPYfhH8L/6pZ/C16/2+cG/G4FK206nWT4iQNzpAKkgd9ifSvI/ZPxZvC4xJdUEodQpsqOySeYJ2EgAT1r3fHYpDLa3nDtSVKPkkTPoN64+a/3xt28L+mXz9wP2ZYzErQpLCmWhBK3h4ZCd50qGo+gFc7xhgE4bEv4dCurw1lGoix5GD6EGvXsb7W21BwwmJcSoGChOgoI5K1rBAO1t/KvKOK+IqxnEXn1ghbqtZB3Cdkp+QAHyq+GWWWXeJlllxx7tKUpXU5hSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoD2P2BcNQfHxSkgrQUMoJ3CVJ1rI7EpKEz0JHWvYcVihhtDjq7JQkqPlAmPQXNeIfZr2gRw2L8N5WlD4CFE7JWD8GonYbkeZFex45x8OypK3FhtOqAT1OwA3JPQVw82MvJ145xlh85cbccVjMXiMSZ/nLUUzzQDoQPklIHyrlqUr0lxpqYSlKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUAfQewziz2IwDbbji1pRqacJJJUg6QSTzKSlV+lfVOZ7GcF/bOMxRAB1LdaSRzSo6ln/AOQg+lfWq3eR7eLx+6UpSrApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUBWlxSTKVKB8iRTb7p+8r5mkaUBk/EOn7yvmab8Q6fvK+ZrHooDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oDJ/EOn7yvmad+IdP3lfM1j0oD6B9jGIxK8U0g4leElQccYlWkJgAlKUm5hWw5V9L4j4hiMM34mIX4bZNtZIBJ7wBXyFwn/APMMP/eI/wA4r6H9tX/tL//ACWv/C1fP5fL3h6eH+FvFPaFxbC4l4vYZtbStyppSQgq66SRF9h8q6f2X9tH8Nww2LDi0J/23UjUUJH3VJHMgQBbewrjK6PhP2ZYzFotutI8NkyUqdVoCh1B3JHoa6Z44xhpMcsnLbb0Xjf2oYVDSvwy1vOEEJBSUJT0KioAkeh9a8exmJW86t5wytxSlqPmpRJ/ea1uNeF4jCOJZfSjWpOrSlaVGASEEgHbiCR5Vj1njxrH3LHLklfV/s/wDa/wDheGYw+Jbc8NjalpxICgGySEpUCRuCREX2rX4/9q7JYUjBIdU8sFIU4kJSjUCNREkmL7b15LSsceHLK22ss8cdNTLqUpWzEKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUBt8J/+YYf+8R/nFfQ/tq/+0v/APJa/wDC1fO8J/8AADDf3iP84r6F9tQ/7N//AOS1/wCFq+dy/vD08P8AC3gFfS3sk9neGw+FbcebQ8+8lLhU4ApKApIIQkGwgESeZNfNKlBIJUQAASSdgBzNe78K9seDawzTa/HQpCEoWG2tYJSAkkEOAm4m1fPk9uOnj6+yH2pcKwd/B4VTS1KSpK3EJSW0lJIUEgEkkg77QDXjNdnx9xtjjT6n2PEQlZAQlxOpQbSAEJKgRfYm1txXHV3cWu3HLdSlK0YhSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoDb4T/APMMN/eI/zivoX21j/s3/wD5LX/hWr564T/wDMMN/eI/zivoX21j/s3/8A5LX/AIWr53L+8PTw/wALeAUFKJ0gnsqPwr6R4Z9nOE/B4dp1hpwrabUta0BWtaiCo6jcciABtXzhwrjfhYxh9SSsNqCylJgqg7Anka+keFvaZhH8M2t51LDqkgrZWCFJV1A3UPMGvj5N+/H28Ovu+cOKOHHDYt/Dkkhpairqkyk/NJBrGrq/aRxtjG4pLzAKglpKFLKSnWrUpRIB32UBPzrm67sW8dOX7SlKVIpSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQClKUApSlAKUpQH//2Q==" class="w-16 h-16 rounded-lg mx-auto" alt="PTF Logo">
+                    <h1 class="text-xl font-bold text-gray-800 mt-2">PTF Admin Portal</h1>
+                </div>
+                <form id="loginForm">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="email" class="text-sm font-medium text-gray-600">Email</label>
+                            <input type="email" id="email" class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" required value="admin@ptf.org">
+                        </div>
+                        <div>
+                            <label for="password" class="text-sm font-medium text-gray-600">Password</label>
+                            <input type="password" id="password" class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" required value="admin123">
+                        </div>
+                    </div>
+                    <p id="loginError" class="text-red-500 text-sm mt-2 h-4"></p>
+                    <button type="submit" class="w-full mt-4 bg-emerald-600 text-white p-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors">
+                        Login
+                    </button>
+                    <p class="text-xs text-center text-gray-400 mt-4">Demo: admin@ptf.org (admin123) or user@ptf.org (user123)</p>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div id="addActivityModal" class="modal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Add New Activity</h3>
+                <button class="close-modal text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="activityForm">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Activity Type</label>
+                        <select name="type" class="w-full p-2 border border-gray-300 rounded-lg">
+                            <option>Dan Test</option>
+                            <option>Registration</option>
+                            <option>Competition</option>
+                            <option>Training</option>
+                            <option>License</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <input name="description" type="text" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Enter activity description" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                        <input name="date" type="date" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 close-modal">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-lg">Save Activity</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="addEventModal" class="modal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Add New Event</h3>
+                <button class="close-modal text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="eventForm">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Event Name</label>
+                        <input name="name" type="text" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Enter event name" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                        <input name="date" type="date" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                        <input name="location" type="text" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Enter event location">
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 close-modal">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-lg">Save Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="addAthleteModal" class="modal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Add New Athlete</h3>
+                <button class="close-modal text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="athleteForm">
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-full">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Profile Picture</label>
+                        <div class="mt-1 flex items-center space-x-4">
+                            <img id="athletePicturePreview" src="https://via.placeholder.com/150" alt="Profile preview" class="w-16 h-16 rounded-full object-cover bg-gray-200 border">
+                            <input type="file" name="picture" id="athletePicture" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input name="name" type="text" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g. Ali Hassan" required>
+                    </div>
+                     <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                        <input name="age" type="number" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g. 19" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Belt</label>
+                        <select name="belt" class="w-full p-2 border border-gray-300 rounded-lg">
+                            <option>White</option>
+                            <option>Yellow</option>
+                            <option>Green</option>
+                            <option>Blue</option>
+                            <option>Red</option>
+                            <option>Black</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Region</label>
+                        <input name="region" type="text" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g. Sindh" required>
+                    </div>
+                     <div class="col-span-full">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Club</label>
+                        <input name="club" type="text" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g. Karachi Warriors" required>
+                    </div>
+                    <div class="col-span-full">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Coach's Notes (Optional)</label>
+                        <textarea name="coachNotes" class="w-full p-2 border border-gray-300 rounded-lg" rows="2" placeholder="e.g. Great potential, needs to work on stamina"></textarea>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 close-modal">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-lg">Add Athlete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Talent Gem Modal -->
+    <div id="talentGemModal" class="modal">
+        <div id="talentGemModalContent" class="modal-content p-6 max-w-lg w-full relative overflow-hidden bg-gray-50">
+            <!-- Loading state -->
+            <div id="gemLoadingState" class="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-20">
+                <i class="fas fa-spinner fa-spin fa-3x text-emerald-500"></i>
+                <p class="mt-4 text-lg font-semibold text-gray-700">AI is searching for a Gem...</p>
+            </div>
+            <!-- Content -->
+            <div id="gemContentState" class="relative z-10">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto flex items-center justify-center shadow-lg mb-4 ring-4 ring-white">
+                        <i class="fas fa-gem text-4xl text-white"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Talent Gem Discovered!</h2>
+                    <p class="text-gray-500">AI analysis has identified an athlete with high potential.</p>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md p-5 border border-gray-200/80">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h4 id="gemAthleteName" class="font-bold text-2xl text-gray-800"></h4>
+                            <p id="gemAthleteId" class="text-sm text-gray-500"></p>
+                        </div>
+                        <div id="gemAthleteBelt" class="text-sm font-bold px-4 py-1.5 rounded-full"></div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-200 grid grid-cols-2 gap-4 text-sm">
+                        <div class="flex items-center text-gray-600"><i class="fas fa-shield-alt w-5 text-center text-gray-400 mr-2"></i><span id="gemAthleteClub"></span></div>
+                        <div class="flex items-center text-gray-600"><i class="fas fa-map-marker-alt w-5 text-center text-gray-400 mr-2"></i><span id="gemAthleteRegion"></span></div>
+                        <div class="flex items-center text-gray-600"><i class="fas fa-birthday-cake w-5 text-center text-gray-400 mr-2"></i><span id="gemAthleteAge"></span></div>
+                        <div class="flex items-center text-gray-600"><i class="fas fa-trophy w-5 text-center text-gray-400 mr-2"></i><span id="gemAthleteRecord"></span></div>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <h5 class="font-bold text-gray-700 mb-2">AI Justification:</h5>
+                    <div class="bg-emerald-50 border-l-4 border-emerald-400 text-emerald-800 p-4 rounded-r-lg">
+                        <p id="gemJustification" class="italic"></p>
+                    </div>
+                </div>
+
+                 <div class="mt-8 flex justify-end">
+                    <button type="button" class="px-6 py-2 bg-emerald-600 text-white rounded-lg close-modal">Awesome!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Edit Content</h3>
+                <button class="close-modal text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editForm">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Field Name</label>
+                        <input type="text" id="editFieldName" class="w-full p-2 bg-gray-100 border border-gray-300 rounded-lg" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">New Value</label>
+                        <textarea id="editFieldValue" class="w-full p-2 border border-gray-300 rounded-lg" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 close-modal">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-lg">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Region/Department Edit Modal -->
+    <div id="regionDeptModal" class="modal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="regionDeptModalTitle" class="text-xl font-bold">Edit Entry</h3>
+                <button class="close-modal text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="regionDeptForm">
+                <input type="hidden" id="regionDeptType" name="type"> <!-- 'regions' or 'departments' -->
+                <input type="hidden" id="originalName" name="originalName">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                        <input id="regionDeptName" name="name" type="text" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Athletes</label>
+                        <input id="regionDeptAthletes" name="athletes" type="number" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Clubs</label>
+                        <input id="regionDeptClubs" name="clubs" type="number" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Icon (e.g., fa-landmark)</label>
+                        <input id="regionDeptIcon" name="icon" type="text" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g., fa-landmark" required>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 close-modal">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-lg">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Management Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="userModalTitle" class="text-xl font-bold">Add New User</h3>
+                <button class="close-modal text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="userForm">
+                <input type="hidden" id="userId" name="id">
+                <div class="space-y-4">
+                    <div>
+                        <label for="userName" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input id="userName" name="name" type="text" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                    </div>
+                    <div>
+                        <label for="userEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input id="userEmail" name="email" type="email" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                    </div>
+                    <div>
+                        <label for="userPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input id="userPassword" name="password" type="password" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Leave blank to keep unchanged">
+                    </div>
+                    <div>
+                        <label for="userRole" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                        <select id="userRole" name="role" class="w-full p-2 border border-gray-300 rounded-lg">
+                            <option value="User">User</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 close-modal">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-lg">Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Register Athletes for Event Modal -->
+    <div id="registerAthletesModal" class="modal">
+        <div class="modal-content p-6 max-w-lg w-full">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-xl font-bold">Register Athletes</h3>
+                <button class="close-modal text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+            </div>
+            <p class="text-gray-500 mb-4">For event: <span id="registrationModalEventName" class="font-semibold"></span></p>
+            
+            <form id="registerAthletesForm">
+                <div class="relative mb-4">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="registrationAthleteSearch" placeholder="Search athletes..." class="w-full p-2 pl-9 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                </div>
+                
+                <div id="registrationAthleteList" class="space-y-2 bg-gray-50">
+                    <!-- Athlete list will be populated here -->
+                </div>
+                
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 close-modal">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-lg">Save Registrations</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Athlete Detail Modal -->
+    <div id="athleteDetailModal" class="modal">
+        <div class="modal-content p-6 max-w-3xl w-full">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h3 id="detailAthleteName" class="text-2xl font-bold"></h3>
+                    <p id="detailAthleteId" class="text-sm text-gray-500"></p>
+                </div>
+                <button class="close-modal text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Left Column: Profile Info -->
+                <div class="md:col-span-1 space-y-4">
+                    <img id="detailAthleteImage" src="" alt="Athlete" class="w-full h-auto rounded-lg object-cover aspect-square">
+                    <div id="detailAthleteBelt" class="text-center font-bold px-3 py-2 rounded-lg text-lg"></div>
+                    <div class="text-sm space-y-2">
+                        <p><i class="fas fa-shield-alt w-5 text-center text-gray-400 mr-2"></i><strong class="font-semibold">Club:</strong> <span id="detailAthleteClub"></span></p>
+                        <p><i class="fas fa-map-marker-alt w-5 text-center text-gray-400 mr-2"></i><strong class="font-semibold">Region:</strong> <span id="detailAthleteRegion"></span></p>
+                        <p><i class="fas fa-birthday-cake w-5 text-center text-gray-400 mr-2"></i><strong class="font-semibold">Age:</strong> <span id="detailAthleteAge"></span></p>
+                    </div>
+                </div>
+    
+                <!-- Right Column: Details -->
+                <div class="md:col-span-2 space-y-6">
+                    <!-- Performance Stats -->
+                    <div>
+                        <h4 class="font-bold text-gray-700 mb-3 text-lg">Performance Stats</h4>
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <p class="text-sm text-gray-500">Wins</p>
+                                <p id="detailAthleteWins" class="text-2xl font-bold text-green-600"></p>
+                            </div>
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <p class="text-sm text-gray-500">Losses</p>
+                                <p id="detailAthleteLosses" class="text-2xl font-bold text-red-600"></p>
+                            </div>
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <p class="text-sm text-gray-500">Win Rate</p>
+                                <p id="detailAthleteWinRate" class="text-2xl font-bold text-blue-600"></p>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Dan Test History -->
+                    <div>
+                        <h4 class="font-bold text-gray-700 mb-3 text-lg">Dan Test History</h4>
+                        <ul id="detailAthleteDanHistory" class="space-y-2 text-sm max-h-32 overflow-y-auto pr-2">
+                            <!-- History items here -->
+                        </ul>
+                    </div>
+    
+                    <!-- Registered Events -->
+                    <div>
+                        <h4 class="font-bold text-gray-700 mb-3 text-lg">Registered Events</h4>
+                        <ul id="detailAthleteEvents" class="space-y-2 text-sm max-h-32 overflow-y-auto pr-2">
+                            <!-- Event items here -->
+                        </ul>
+                    </div>
+                    
+                     <!-- Coach's Notes -->
+                    <div>
+                        <h4 class="font-bold text-gray-700 mb-2 text-lg">Coach's Notes</h4>
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded-r-lg">
+                            <p id="detailAthleteNotes" class="italic"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module" src="index.tsx"></script>
+</body>
+</html>
